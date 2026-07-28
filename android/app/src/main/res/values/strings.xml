@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Codex Meter</string>
+    <string name="widget_description">Uso restante de Codex</string>
+    <string name="preview_number">65</string>
+    <string name="preview_percent" formatted="false">%</string>
+    <string name="preview_reset_date">3 ago.</string>
+    <string name="refresh_description">Actualizar uso de Codex</string>
+    <string name="pair_title">Conecta tu PC</string>
+    <string name="pair_explanation">Abre “Vincular teléfono” en la PC y escanea el QR. Ambos dispositivos deben estar en la misma Wi‑Fi.</string>
+    <string name="pair_scan">Escanear QR</string>
+    <string name="pair_not_connected">Aún sin conectar</string>
+    <string name="pair_connected">PC vinculada: %1$s</string>
+    <string name="pair_invalid">El código no es válido</string>
+    <string name="pair_scan_failed">No se pudo abrir el lector de QR</string>
+    <string name="pair_widget_action">Configurar conexión</string>
+</resources>
