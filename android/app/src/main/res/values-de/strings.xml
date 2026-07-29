@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_description">Verbleibende Codex-Nutzung</string>
+    <string name="preview_reset_date">3. Aug.</string>
+    <string name="refresh_description">Codex-Nutzung aktualisieren</string>
+    <string name="pair_title">PC verbinden</string>
+    <string name="pair_explanation">Öffne „Smartphone koppeln“ auf dem PC und scanne den QR-Code. Beide Geräte müssen im selben WLAN sein.</string>
+    <string name="pair_scan">QR-Code scannen</string>
+    <string name="pair_not_connected">Noch nicht verbunden</string>
+    <string name="pair_checking">Verbindung wird geprüft…</string>
+    <string name="pair_connected">Verbunden</string>
+    <string name="pair_connection_error">Verbindungsfehler</string>
+    <string name="pair_invalid">Der Code ist ungültig</string>
+    <string name="pair_scan_failed">QR-Scanner konnte nicht geöffnet werden</string>
+    <string name="pair_widget_action">Verbindung einrichten</string>
+</resources>

@@ -33,8 +33,20 @@ class PairingStore(context: Context) {
                 .putString(HOST, payload.host)
                 .putInt(PORT, payload.port)
                 .putString(PIN, payload.certificatePin.base64Url())
+                .remove(LAST_CONNECTION_SUCCEEDED)
                 .commit(),
         ) { "Could not persist pairing" }
+    }
+
+    fun lastConnectionSucceeded(): Boolean? =
+        if (preferences.contains(LAST_CONNECTION_SUCCEEDED)) {
+            preferences.getBoolean(LAST_CONNECTION_SUCCEEDED, false)
+        } else {
+            null
+        }
+
+    fun recordConnectionResult(succeeded: Boolean) {
+        preferences.edit().putBoolean(LAST_CONNECTION_SUCCEEDED, succeeded).apply()
     }
 
     fun read(): BridgeConnection? = runCatching {
@@ -57,5 +69,6 @@ class PairingStore(context: Context) {
         const val HOST = "host"
         const val PORT = "port"
         const val PIN = "certificate_pin"
+        const val LAST_CONNECTION_SUCCEEDED = "last_connection_succeeded"
     }
 }

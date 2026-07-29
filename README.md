@@ -11,31 +11,31 @@ Codex Meter is a personal Android 1×1 widget that shows the remaining weekly Co
 - Refreshes when the widget is tapped and every 30 minutes while installed.
 - Shows one centered offline symbol when the PC cannot be reached.
 - Pairs by QR with certificate pinning and signed requests.
-- Runs as one silent Windows process started with a double-click.
+- Runs silently from the Windows notification area, with no console window.
 
 There is no history, account system, telemetry, notification service, cloud relay, or access outside the private LAN.
 
 ## Install from the release ZIP
 
-Requirements: Windows and an authenticated current Codex CLI.
+Requirements: Windows 11 25H2, Node.js 22 or newer, and an authenticated current Codex CLI.
 
 1. Extract the ZIP. It contains only `Codex-Meter-Windows.exe` and `Codex-Meter.apk`.
-2. Double-click `Codex-Meter-Windows.exe`. It runs silently and opens the pairing page in the default browser.
+2. Double-click `Codex-Meter-Windows.exe`. It opens the pairing page and remains available in the notification area.
 3. If Windows asks, allow access on private networks.
 4. Install `Codex-Meter.apk` on the phone.
 5. Open **Codex Meter**, scan the QR while both devices use the same Wi-Fi, and add its 1×1 widget.
 
-Run the EXE once after each Windows sign-in. A second double-click reopens the same live pairing page without starting another controller. The QR is generated dynamically from the current private LAN address, port, request key, and certificate; it remains intentionally identical until one of those values changes.
+Run the EXE once after each Windows sign-in. Its monochrome tray icon follows the Windows theme; hover shows the last confirmed connection state, and a click reopens the live pairing page. A second launch does the same without starting another controller. The QR is generated dynamically from the current private LAN address, port, request key, and certificate; it remains intentionally identical until one of those values changes.
 
 ## Security model
 
 The controller binds HTTPS port `4317` directly to the selected private LAN address. The QR transfers a random 256-bit request key and the self-signed certificate fingerprint. Every request includes a timestamp, nonce, and HMAC; the Android client also pins the certificate. Codex credentials never leave Windows.
 
-The browser page listens only on `127.0.0.1:4318`. It supports English, Spanish, Portuguese, French, German, Japanese, Korean, and Chinese, with English fallback. After the first authenticated phone request, it removes the QR and confirms that the window can be closed. Widget reset dates use Android's locale data rather than a hand-maintained month list.
+The browser page listens only on `127.0.0.1:4318`. The Android pairing screen, browser page, and tray status support English, Spanish, Portuguese, French, German, Japanese, Korean, and Chinese, with English fallback. After the first authenticated phone request, the browser removes the QR and confirms that the window can be closed. Widget reset dates use Android's locale data rather than a hand-maintained month list.
 
 ## Build from source
 
-Requirements: Node.js 26+, authenticated Codex CLI, JDK 17, Android SDK, and ADB.
+Requirements: Node.js 22+, authenticated Codex CLI, JDK 17, Android SDK, and ADB.
 
 ```powershell
 cd bridge
@@ -49,7 +49,7 @@ cd ..
 ./scripts/build-windows.ps1
 ```
 
-`./scripts/build-apk.ps1` runs the Android checks and writes `dist/Codex-Meter.apk`. `./scripts/build-windows.ps1` bundles Node into the single silent controller. `./scripts/install-apk.ps1` installs the APK on the single connected ADB device, or accepts `-Serial` for a specific device.
+`./scripts/build-apk.ps1` runs the Android checks and writes `dist/Codex-Meter.apk`. `./scripts/build-windows.ps1` embeds the controller in a small .NET Framework launcher and reuses the Node.js runtime already required by Codex CLI. `./scripts/install-apk.ps1` installs the APK on the single connected ADB device, or accepts `-Serial` for a specific device.
 
 ## Closed API
 

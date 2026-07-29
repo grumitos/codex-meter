@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_description">Uso restante do Codex</string>
+    <string name="preview_reset_date">3 ago.</string>
+    <string name="refresh_description">Atualizar uso do Codex</string>
+    <string name="pair_title">Conecte seu PC</string>
+    <string name="pair_explanation">Abra “Emparelhar telefone” no PC e escaneie o código QR. Os dois dispositivos devem estar na mesma rede Wi‑Fi.</string>
+    <string name="pair_scan">Escanear código QR</string>
+    <string name="pair_not_connected">Ainda não conectado</string>
+    <string name="pair_checking">Verificando conexão…</string>
+    <string name="pair_connected">Conectado</string>
+    <string name="pair_connection_error">Erro de conexão</string>
+    <string name="pair_invalid">O código não é válido</string>
+    <string name="pair_scan_failed">Não foi possível abrir o leitor de QR</string>
+    <string name="pair_widget_action">Configurar conexão</string>
+</resources>

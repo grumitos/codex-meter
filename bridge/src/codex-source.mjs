@@ -107,7 +107,7 @@ export class CodexAppServerSource {
       clientInfo: {
         name: "codex_meter_bridge",
         title: "Codex Meter Bridge",
-        version: "1.1.2",
+        version: "1.1.3",
       },
     });
     this.#send({ method: "initialized", params: {} });

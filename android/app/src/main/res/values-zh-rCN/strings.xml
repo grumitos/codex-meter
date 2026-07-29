@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_description">Codex 剩余用量</string>
+    <string name="preview_reset_date">8月3日</string>
+    <string name="refresh_description">刷新 Codex 用量</string>
+    <string name="pair_title">连接电脑</string>
+    <string name="pair_explanation">在电脑上打开“配对手机”并扫描二维码。两台设备必须连接到同一 Wi‑Fi 网络。</string>
+    <string name="pair_scan">扫描二维码</string>
+    <string name="pair_not_connected">尚未连接</string>
+    <string name="pair_checking">正在检查连接…</string>
+    <string name="pair_connected">已连接</string>
+    <string name="pair_connection_error">连接错误</string>
+    <string name="pair_invalid">代码无效</string>
+    <string name="pair_scan_failed">无法打开二维码扫描器</string>
+    <string name="pair_widget_action">设置连接</string>
+</resources>

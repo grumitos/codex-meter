@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_description">남은 Codex 사용량</string>
+    <string name="preview_reset_date">8월 3일</string>
+    <string name="refresh_description">Codex 사용량 새로고침</string>
+    <string name="pair_title">PC 연결</string>
+    <string name="pair_explanation">PC에서 ‘휴대전화 페어링’을 열고 QR 코드를 스캔하세요. 두 기기가 같은 Wi‑Fi에 연결되어 있어야 합니다.</string>
+    <string name="pair_scan">QR 코드 스캔</string>
+    <string name="pair_not_connected">아직 연결되지 않음</string>
+    <string name="pair_checking">연결 확인 중…</string>
+    <string name="pair_connected">연결됨</string>
+    <string name="pair_connection_error">연결 오류</string>
+    <string name="pair_invalid">유효하지 않은 코드입니다</string>
+    <string name="pair_scan_failed">QR 스캐너를 열 수 없습니다</string>
+    <string name="pair_widget_action">연결 설정</string>
+</resources>

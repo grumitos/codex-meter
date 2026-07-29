@@ -2,7 +2,6 @@ import { spawn } from "node:child_process";
 import { appendFile, mkdir, rename, writeFile } from "node:fs/promises";
 import { networkInterfaces } from "node:os";
 import path from "node:path";
-import { isSea } from "node:sea";
 
 import { startServer } from "./server.mjs";
 
@@ -38,6 +37,10 @@ export function choosePrivateIpv4(networks) {
   return candidates[0].address;
 }
 
+export function shouldStartWindowsController(environment) {
+  return environment.CODEX_METER_RUN === "1";
+}
+
 async function writeCurrentEndpoint() {
   await mkdir(DATA_DIRECTORY, { recursive: true, mode: 0o700 });
   const endpoint = path.join(DATA_DIRECTORY, "pairing-endpoint.json");
@@ -67,6 +70,20 @@ function openPairingPage() {
   }).unref();
 }
 
+function watchParent(shutdown) {
+  const parentPid = Number(process.env.CODEX_METER_PARENT_PID);
+  if (!Number.isSafeInteger(parentPid) || parentPid <= 0) return;
+  const monitor = setInterval(() => {
+    try {
+      process.kill(parentPid, 0);
+    } catch {
+      clearInterval(monitor);
+      shutdown();
+    }
+  }, 500);
+  monitor.unref();
+}
+
 async function waitForPairingPage() {
   for (let attempt = 0; attempt < 40; attempt += 1) {
     if (await pageIsReady()) return;
@@ -82,8 +99,8 @@ async function main() {
       throw new Error("Missing self-test output path.");
     }
     await writeFile(selfTestOutput, JSON.stringify({
-      sea: isSea(),
       host: choosePrivateIpv4(networkInterfaces()),
+      runtime: process.version,
     }));
     return;
   }
@@ -94,12 +111,13 @@ async function main() {
     return;
   }
 
-  await startServer({ host: process.env.CODEX_METER_HOST });
+  const controller = await startServer({ host: process.env.CODEX_METER_HOST });
+  watchParent(controller.shutdown);
   await waitForPairingPage();
   openPairingPage();
 }
 
-if (isSea()) {
+if (shouldStartWindowsController(process.env)) {
   main().catch(async (error) => {
     await mkdir(DATA_DIRECTORY, { recursive: true }).catch(() => {});
     await appendFile(

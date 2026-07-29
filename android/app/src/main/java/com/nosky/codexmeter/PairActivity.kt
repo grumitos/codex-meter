@@ -13,6 +13,9 @@ import com.nosky.codexmeter.data.PairingStore
 import com.nosky.codexmeter.data.UsageRepository
 import com.nosky.codexmeter.work.RefreshScheduler
 
+internal fun shouldShowChecking(lastConnectionSucceeded: Boolean?) =
+    lastConnectionSucceeded == null
+
 class PairActivity : Activity() {
     private lateinit var status: TextView
     private val handler = Handler(Looper.getMainLooper())
@@ -64,12 +67,21 @@ class PairActivity : Activity() {
 
     private fun updateConnectionStatus() {
         handler.removeCallbacksAndMessages(null)
-        if (PairingStore(this).read() == null) {
+        val pairingStore = PairingStore(this)
+        if (pairingStore.read() == null) {
             statusCheck += 1
             showStatus(R.string.pair_not_connected, R.color.pair_text_secondary)
             return
         }
-        showStatus(R.string.pair_checking, R.color.pair_text_secondary)
+        val lastConnectionSucceeded = pairingStore.lastConnectionSucceeded()
+        if (shouldShowChecking(lastConnectionSucceeded)) {
+            showStatus(R.string.pair_checking, R.color.pair_text_secondary)
+        } else {
+            showStatus(
+                if (lastConnectionSucceeded == true) R.string.pair_connected else R.string.pair_connection_error,
+                if (lastConnectionSucceeded == true) R.color.pair_status_connected else R.color.pair_status_error,
+            )
+        }
         val check = ++statusCheck
         Thread({
             val connected = runCatching {
@@ -77,6 +89,7 @@ class PairActivity : Activity() {
             }.isSuccess
             runOnUiThread {
                 if (check != statusCheck || isFinishing || isDestroyed) return@runOnUiThread
+                pairingStore.recordConnectionResult(connected)
                 showStatus(
                     if (connected) R.string.pair_connected else R.string.pair_connection_error,
                     if (connected) R.color.pair_status_connected else R.color.pair_status_error,

@@ -1,7 +1,15 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { choosePrivateIpv4 } from "../src/windows-app.mjs";
+import {
+  choosePrivateIpv4,
+  shouldStartWindowsController,
+} from "../src/windows-app.mjs";
+
+test("starts only when invoked by the native Windows launcher", () => {
+  assert.equal(shouldStartWindowsController({ CODEX_METER_RUN: "1" }), true);
+  assert.equal(shouldStartWindowsController({}), false);
+});
 
 test("chooses Wi-Fi LAN over CGNAT, public, and loopback addresses", () => {
   assert.equal(
