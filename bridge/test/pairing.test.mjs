@@ -51,7 +51,7 @@ test("creates the exact private-LAN pairing URI", () => {
     `codexmeter://pair?v=1&host=192.168.1.23&port=4317&pin=${pin}&key=${key.toString("base64url")}`,
   );
   assert.throws(() =>
-    createPairingUri({ host: "100.106.40.115", port: 4317, key, pin }),
+    createPairingUri({ host: "100.64.0.1", port: 4317, key, pin }),
   );
   assert.throws(() =>
     createPairingUri({ host: "8.8.8.8", port: 4317, key, pin }),
@@ -83,6 +83,8 @@ test("renders the product favicon and main browser languages", async () => {
   });
 
   assert.match(html, /<link rel="icon" href="data:image\/svg\+xml,/);
+  assert.match(html, /class="product-mark"/);
+  assert.match(html, /M12 31V12/);
   assert.match(html, /navigator\.language/);
   for (const language of ["en", "es", "pt", "fr", "de", "ja", "ko", "zh"]) {
     assert.match(html, new RegExp(`\\b${language}:`));
@@ -105,10 +107,10 @@ test("renders the current pairing page on every local request", async () => {
     assert.match(first.headers.get("content-security-policy"), /script-src 'unsafe-inline'/);
     assert.match(await first.text(), /192\.168\.1\.2:4317/);
 
-    endpoint = "192.168.1.15:5317";
+    endpoint = "192.168.1.24:5317";
     assert.match(
       await (await fetch(`http://127.0.0.1:${port}/`)).text(),
-      /192\.168\.1\.15:5317/,
+      /192\.168\.1\.24:5317/,
     );
     assert.equal(
       (await fetch(`http://127.0.0.1:${port}/v1/usage`)).status,

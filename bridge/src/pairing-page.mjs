@@ -2,7 +2,8 @@ import { isIPv4 } from "node:net";
 
 import QRCode from "qrcode";
 
-const favicon = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><style>.mark{fill:#544bd7}@media(prefers-color-scheme:dark){.mark{fill:#8e86ff}}</style><rect class="mark" x="5" y="3" width="22" height="20" rx="6"/><rect class="mark" x="9" y="25" width="14" height="4" rx="2"/></svg>`)}`;
+const remoteMark = `<g fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 31V12a4 4 0 0 1 4-4h32a4 4 0 0 1 4 4v19"/><path d="M10 31h44a2 2 0 0 1 2 2v2a7 7 0 0 1-7 7H15a7 7 0 0 1-7-7v-2a2 2 0 0 1 2-2Z"/></g><g fill="currentColor"><circle cx="32" cy="49" r="2.6"/><circle cx="12" cy="58" r="2.4"/><circle cx="22" cy="58" r="2.4"/><circle cx="32" cy="58" r="2.4"/><circle cx="42" cy="58" r="2.4"/><circle cx="52" cy="58" r="2.4"/></g>`;
+const favicon = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><style>svg{color:#544bd7}@media(prefers-color-scheme:dark){svg{color:#918aff}}</style>${remoteMark}</svg>`)}`;
 
 function isPrivateIpv4(host) {
   if (!isIPv4(host)) {
@@ -56,49 +57,126 @@ export async function renderPairingHtml(options) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
+  <meta name="theme-color" content="#f7f7fa" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="${favicon}">
   <title>Pair Codex Meter</title>
   <style>
-    :root { color-scheme: light dark; font-family: system-ui, sans-serif; background: #f4f4f7; color: #202026; }
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; }
-    main { box-sizing: border-box; width: min(90vw, 24rem); padding: 2rem; border: 1px solid #dedee5; border-radius: 1.75rem; background: #fff; text-align: center; }
-    svg { display: block; width: 100%; height: auto; border-radius: 1.25rem; }
-    h1 { margin: 1.4rem 0 .45rem; font-size: 1.45rem; line-height: 1.2; }
-    p { margin: 0; color: #666671; line-height: 1.5; }
-    code { display: block; margin-top: .75rem; color: #666671; font: .82rem ui-monospace, monospace; }
+    :root {
+      color-scheme: light dark;
+      font-family: system-ui, sans-serif;
+      background: #f7f7fa;
+      color: #18181b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: max(1.5rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1.5rem, env(safe-area-inset-left));
+      display: grid;
+      place-items: center;
+    }
+    main {
+      width: min(100%, 52rem);
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 18rem;
+      gap: 3rem;
+      align-items: center;
+      border: 1px solid #dedee5;
+      border-radius: 1.75rem;
+      background: #fff;
+    }
+    .intro { min-width: 0; text-align: center; }
+    .product-mark {
+      display: block;
+      width: 3rem;
+      height: 3rem;
+      margin: 0 auto .75rem;
+      color: #544bd7;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.625rem;
+      line-height: 1.27;
+      text-wrap: balance;
+    }
+    p {
+      margin: .75rem 0 0;
+      color: #5f5f68;
+      font-size: 1.0625rem;
+      line-height: 1.55;
+      text-wrap: pretty;
+    }
+    .status {
+      margin-top: 1.5rem;
+      color: #146c2e;
+      font-size: .875rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    code {
+      display: block;
+      margin-top: .5rem;
+      color: #5f5f68;
+      font: 500 .875rem/1.4 ui-monospace, monospace;
+      overflow-wrap: anywhere;
+    }
+    .qr {
+      overflow: hidden;
+      border-radius: 1.5rem;
+      background: #fff;
+    }
+    .qr svg { display: block; width: 100%; height: auto; }
     @media (prefers-color-scheme: dark) {
-      :root { background: #111114; color: #f1f1f5; }
-      main { border-color: #333339; background: #1c1c20; }
-      p, code { color: #aaaab3; }
+      :root { background: #000; color: #fff; }
+      main { border-color: #303036; background: #000; }
+      .product-mark { color: #fff; }
+      p, code { color: #b8b8c0; }
+      .status { color: #7ad99a; }
+    }
+    @media (max-width: 43.75rem) {
+      body { padding: 1rem; }
+      main {
+        width: min(100%, 24rem);
+        padding: 1.5rem;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
     }
   </style>
 </head>
 <body>
   <main>
-    ${qr}
-    <h1>Link Codex Meter</h1>
-    <p>Open the app on your phone and scan the code on the same Wi-Fi network.</p>
-    <code>${endpoint}</code>
+    <section class="intro">
+      <svg class="product-mark" viewBox="0 0 64 64" aria-hidden="true">${remoteMark}</svg>
+      <h1>Connect your phone</h1>
+      <p>Open Codex Meter on your phone and scan this QR. Both devices must be on the same Wi-Fi network.</p>
+      <div class="status" role="status">Ready to pair</div>
+      <code translate="no">${endpoint}</code>
+    </section>
+    <div class="qr" role="img" aria-label="Codex Meter pairing QR">${qr}</div>
   </main>
   <script>
     const translations = {
-      en: ["Pair Codex Meter", "Link Codex Meter", "Open the app on your phone and scan the code on the same Wi-Fi network."],
-      es: ["Emparejar Codex Meter", "Vincula Codex Meter", "Abre la app en tu teléfono y escanea el código desde la misma red Wi-Fi."],
-      pt: ["Emparelhar Codex Meter", "Conecte o Codex Meter", "Abra o app no celular e escaneie o código na mesma rede Wi-Fi."],
-      fr: ["Associer Codex Meter", "Associez Codex Meter", "Ouvrez l’app sur votre téléphone et scannez le code sur le même réseau Wi-Fi."],
-      de: ["Codex Meter koppeln", "Codex Meter verbinden", "Öffne die App auf deinem Smartphone und scanne den Code im selben WLAN."],
-      ja: ["Codex Meter をペアリング", "Codex Meter を接続", "スマートフォンでアプリを開き、同じ Wi-Fi ネットワーク上でコードをスキャンしてください。"],
-      ko: ["Codex Meter 페어링", "Codex Meter 연결", "휴대전화에서 앱을 열고 동일한 Wi-Fi 네트워크에서 코드를 스캔하세요."],
-      zh: ["配对 Codex Meter", "连接 Codex Meter", "在手机上打开应用，并在同一 Wi-Fi 网络中扫描此代码。"],
+      en: ["Pair Codex Meter", "Connect your phone", "Open Codex Meter on your phone and scan this QR. Both devices must be on the same Wi-Fi network.", "Ready to pair", "Codex Meter pairing QR"],
+      es: ["Emparejar Codex Meter", "Conecta tu teléfono", "Abre Codex Meter en tu teléfono y escanea este QR. Ambos dispositivos deben estar en la misma red Wi-Fi.", "Listo para vincular", "QR para vincular Codex Meter"],
+      pt: ["Emparelhar Codex Meter", "Conecte seu telefone", "Abra o Codex Meter no celular e escaneie este QR. Os dois dispositivos devem estar na mesma rede Wi-Fi.", "Pronto para emparelhar", "QR para emparelhar o Codex Meter"],
+      fr: ["Associer Codex Meter", "Connectez votre téléphone", "Ouvrez Codex Meter sur votre téléphone et scannez ce QR. Les deux appareils doivent utiliser le même réseau Wi-Fi.", "Prêt à associer", "QR d’association de Codex Meter"],
+      de: ["Codex Meter koppeln", "Smartphone verbinden", "Öffne Codex Meter auf deinem Smartphone und scanne diesen QR-Code. Beide Geräte müssen im selben WLAN sein.", "Bereit zum Koppeln", "QR-Code zum Koppeln von Codex Meter"],
+      ja: ["Codex Meter をペアリング", "スマートフォンを接続", "スマートフォンで Codex Meter を開いてこの QR コードをスキャンしてください。両方のデバイスを同じ Wi-Fi に接続します。", "ペアリングの準備完了", "Codex Meter ペアリング用 QR コード"],
+      ko: ["Codex Meter 페어링", "휴대전화 연결", "휴대전화에서 Codex Meter를 열고 이 QR을 스캔하세요. 두 기기가 같은 Wi-Fi에 연결되어 있어야 합니다.", "페어링 준비됨", "Codex Meter 페어링 QR"],
+      zh: ["配对 Codex Meter", "连接手机", "在手机上打开 Codex Meter 并扫描此二维码。两台设备必须连接到同一 Wi-Fi 网络。", "已准备好配对", "Codex Meter 配对二维码"],
     };
     const requested = navigator.language.toLowerCase().split("-")[0];
     const language = translations[requested] ? requested : "en";
-    const [title, heading, description] = translations[language];
+    const [title, heading, description, status, qrLabel] = translations[language];
     document.documentElement.lang = language;
     document.title = title;
     document.querySelector("h1").textContent = heading;
     document.querySelector("p").textContent = description;
+    document.querySelector(".status").textContent = status;
+    document.querySelector(".qr").setAttribute("aria-label", qrLabel);
   </script>
 </body>
 </html>

@@ -6,5 +6,6 @@ local.properties
 android/**/build/
 bridge/node_modules/
 dist/
+.codex-remote-attachments/
 *.jks
 *.keystore

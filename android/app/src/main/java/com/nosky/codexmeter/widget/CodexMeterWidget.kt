@@ -126,6 +126,7 @@ private fun WidgetSurface(state: StoredWidgetState, paired: Boolean) {
                         contentAlignment = Alignment.BottomCenter,
                     ) {
                         Row(verticalAlignment = Alignment.Bottom) {
+                            Spacer(GlanceModifier.width(2.dp))
                             Text(
                                 text = activeRemaining.toString(),
                                 maxLines = 1,
@@ -156,14 +157,35 @@ private fun WidgetSurface(state: StoredWidgetState, paired: Boolean) {
                             .height(USAGE_DATE_HEIGHT_DP.dp),
                         contentAlignment = Alignment.TopCenter,
                     ) {
-                        Text(
-                            text = activeResetDate,
-                            maxLines = 1,
-                            style = TextStyle(
-                                color = GlanceTheme.colors.onSurfaceVariant,
-                                fontSize = cappedFontSizeSp(RESET_DATE_TEXT_DP, fontScale).sp,
-                            ),
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = GlanceModifier
+                                    .width(10.dp)
+                                    .height(RESET_DATE_TEXT_DP.dp),
+                                contentAlignment = Alignment.BottomCenter,
+                            ) {
+                                Image(
+                                    provider = ImageProvider(R.drawable.ic_remote_mark),
+                                    contentDescription = null,
+                                    modifier = GlanceModifier.size(10.dp),
+                                    colorFilter = ColorFilter.tint(
+                                        GlanceTheme.colors.onSurfaceVariant,
+                                    ),
+                                )
+                            }
+                            Spacer(GlanceModifier.width(3.dp))
+                            Text(
+                                text = activeResetDate,
+                                maxLines = 1,
+                                style = TextStyle(
+                                    color = GlanceTheme.colors.onSurfaceVariant,
+                                    fontSize = cappedFontSizeSp(
+                                        RESET_DATE_TEXT_DP,
+                                        fontScale,
+                                    ).sp,
+                                ),
+                            )
+                        }
                     }
                 }
             }

@@ -10,7 +10,9 @@
     <string name="pair_explanation">Abre “Vincular teléfono” en la PC y escanea el QR. Ambos dispositivos deben estar en la misma Wi‑Fi.</string>
     <string name="pair_scan">Escanear QR</string>
     <string name="pair_not_connected">Aún sin conectar</string>
-    <string name="pair_connected">PC vinculada: %1$s</string>
+    <string name="pair_checking">Comprobando conexión…</string>
+    <string name="pair_connected">Conectado</string>
+    <string name="pair_connection_error">Error de conexión</string>
     <string name="pair_invalid">El código no es válido</string>
     <string name="pair_scan_failed">No se pudo abrir el lector de QR</string>
     <string name="pair_widget_action">Configurar conexión</string>

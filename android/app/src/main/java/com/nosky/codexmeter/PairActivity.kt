@@ -2,23 +2,27 @@ package com.nosky.codexmeter
 
 import android.app.Activity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.TextView
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import com.nosky.codexmeter.data.PairingPayload
 import com.nosky.codexmeter.data.PairingStore
+import com.nosky.codexmeter.data.UsageRepository
 import com.nosky.codexmeter.work.RefreshScheduler
 
 class PairActivity : Activity() {
     private lateinit var status: TextView
+    private val handler = Handler(Looper.getMainLooper())
+    private var statusCheck = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pair)
 
         status = findViewById(R.id.pair_status)
-        showCurrentPairing()
 
         val scanner = GmsBarcodeScanning.getClient(
             this,
@@ -34,25 +38,60 @@ class PairActivity : Activity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateConnectionStatus()
+    }
+
+    override fun onPause() {
+        statusCheck += 1
+        handler.removeCallbacksAndMessages(null)
+        super.onPause()
+    }
+
     private fun save(rawPayload: String) {
         runCatching {
             val payload = PairingPayload.parse(rawPayload.trim())
             PairingStore(this).save(payload)
             payload.host
-        }.onSuccess { host ->
-            status.text = getString(R.string.pair_connected, host)
+        }.onSuccess {
             RefreshScheduler.requestImmediate(this)
+            updateConnectionStatus()
         }.onFailure {
-            status.setText(R.string.pair_invalid)
+            showStatus(R.string.pair_invalid, R.color.pair_status_error)
         }
     }
 
-    private fun showCurrentPairing() {
-        val host = PairingStore(this).read()?.host
-        status.text = if (host == null) {
-            getString(R.string.pair_not_connected)
-        } else {
-            getString(R.string.pair_connected, host)
+    private fun updateConnectionStatus() {
+        handler.removeCallbacksAndMessages(null)
+        if (PairingStore(this).read() == null) {
+            statusCheck += 1
+            showStatus(R.string.pair_not_connected, R.color.pair_text_secondary)
+            return
         }
+        showStatus(R.string.pair_checking, R.color.pair_text_secondary)
+        val check = ++statusCheck
+        Thread({
+            val connected = runCatching {
+                UsageRepository(applicationContext).fetch()
+            }.isSuccess
+            runOnUiThread {
+                if (check != statusCheck || isFinishing || isDestroyed) return@runOnUiThread
+                showStatus(
+                    if (connected) R.string.pair_connected else R.string.pair_connection_error,
+                    if (connected) R.color.pair_status_connected else R.color.pair_status_error,
+                )
+                handler.postDelayed(::updateConnectionStatus, STATUS_REFRESH_MILLIS)
+            }
+        }, "CodexMeterStatus").start()
+    }
+
+    private fun showStatus(text: Int, color: Int) {
+        status.setText(text)
+        status.setTextColor(getColor(color))
+    }
+
+    private companion object {
+        const val STATUS_REFRESH_MILLIS = 30_000L
     }
 }

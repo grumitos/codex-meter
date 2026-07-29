@@ -114,5 +114,22 @@ if ($RotateKey) {
     }
 }
 
+$ready = $false
+for ($attempt = 0; $attempt -lt 20; $attempt++) {
+    try {
+        $response = Invoke-WebRequest -UseBasicParsing -Uri $pairingUrl -TimeoutSec 1
+        if ($response.StatusCode -eq 200) {
+            $ready = $true
+            break
+        }
+    } catch {
+        Start-Sleep -Milliseconds 250
+    }
+}
+if (-not $ready) {
+    Stop-ScheduledTask -TaskName 'Codex Meter Bridge' -ErrorAction SilentlyContinue
+    throw 'Codex Meter no pudo iniciar. El controlador se cerró sin dejar procesos abiertos.'
+}
+
 Start-Process -FilePath $pairingUrl
 Write-Output "Emparejamiento abierto para https://${Address}:$Port en la red privada."

@@ -1,5 +1,7 @@
 # Codex Meter
 
+<p align="center"><img src="assets/codex-remote.svg" width="72" height="72" alt="Codex Meter Remote mark"></p>
+
 Codex Meter is a personal Android 1×1 widget that shows the remaining weekly Codex allowance and its reset date. A small Windows controller reads the existing local Codex CLI session; the phone receives only the remaining percentage, reset time, and stale state over the current private Wi-Fi network.
 
 ## What it does

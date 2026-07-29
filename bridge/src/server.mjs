@@ -21,6 +21,9 @@ const pairing = await loadOrCreatePairingMaterial(dataDirectory);
 const source = new CodexAppServerSource();
 const cache = new JsonFileCache(path.join(dataDirectory, "usage-cache.json"));
 const service = new UsageService({ source, cache });
+const watchedParent = process.argv.includes("--watch-parent")
+  ? process.ppid
+  : null;
 const pairingEndpoint = path.join(dataDirectory, "pairing-endpoint.json");
 const pairingServer = createPairingServer(async () => {
   const endpoint = JSON.parse(await readFile(pairingEndpoint, "utf8"));
@@ -39,24 +42,52 @@ server.listen(port, host, () => {
 });
 pairingServer.listen(4318, "127.0.0.1");
 
-server.on("error", (error) => {
-  console.error(`Codex Meter bridge could not start: ${error.message}`);
-  process.exitCode = 1;
-});
-pairingServer.on("error", (error) => {
-  console.error(`Codex Meter pairing page could not start: ${error.message}`);
-});
+let shuttingDown = false;
 
-function shutdown() {
+function shutdown(exitCode = 0) {
+  if (shuttingDown) return;
+  shuttingDown = true;
   source.close();
-  let openServers = 2;
+  const listeningServers = [server, pairingServer].filter(
+    (candidate) => candidate.listening,
+  );
+  if (listeningServers.length === 0) {
+    process.exit(exitCode);
+  }
+  const forceExit = setTimeout(() => process.exit(exitCode), 1_000);
+  forceExit.unref();
+  let openServers = listeningServers.length;
   const closed = () => {
     openServers -= 1;
-    if (openServers === 0) process.exit(0);
+    if (openServers === 0) {
+      clearTimeout(forceExit);
+      process.exit(exitCode);
+    }
   };
-  server.close(closed);
-  pairingServer.close(closed);
+  for (const listeningServer of listeningServers) listeningServer.close(closed);
 }
 
-process.once("SIGINT", shutdown);
-process.once("SIGTERM", shutdown);
+function fail(error) {
+  console.error(`Codex Meter stopped: ${error?.message ?? error}`);
+  shutdown(1);
+}
+
+server.once("error", fail);
+pairingServer.once("error", fail);
+process.once("uncaughtException", fail);
+process.once("unhandledRejection", fail);
+process.once("exit", () => source.close());
+process.once("SIGINT", () => shutdown());
+process.once("SIGTERM", () => shutdown());
+
+if (watchedParent != null) {
+  const parentCheck = setInterval(() => {
+    try {
+      process.kill(watchedParent, 0);
+    } catch {
+      clearInterval(parentCheck);
+      shutdown();
+    }
+  }, 500);
+  parentCheck.unref();
+}

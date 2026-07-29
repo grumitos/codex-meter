@@ -6,11 +6,13 @@ $taskName = 'Codex Meter Bridge'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $bridgeRoot = Join-Path $projectRoot 'bridge'
 $server = Join-Path $bridgeRoot 'src\server.mjs'
+$runner = Join-Path $PSScriptRoot 'run-hidden.vbs'
 $node = (Get-Command node.exe -ErrorAction Stop).Source
+$wscript = Join-Path $env:SystemRoot 'System32\wscript.exe'
 $userId = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 $action = New-ScheduledTaskAction `
-    -Execute $node `
-    -Argument "`"$server`"" `
+    -Execute $wscript `
+    -Argument "`"$runner`" `"$node`" `"$server`"" `
     -WorkingDirectory $bridgeRoot
 $trigger = New-ScheduledTaskTrigger -AtLogOn -User $userId
 $principal = New-ScheduledTaskPrincipal -UserId $userId -LogonType Interactive -RunLevel Limited
@@ -19,6 +21,7 @@ $settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries `
     -Hidden `
+    -MultipleInstances IgnoreNew `
     -ExecutionTimeLimit ([TimeSpan]::Zero)
 
 $existingTask = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue

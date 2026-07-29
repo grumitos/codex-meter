@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#25262D</color>
-    <color name="ic_launcher_foreground">#918AFF</color>
+    <color name="ic_launcher_background">#18181B</color>
+    <color name="ic_launcher_foreground">#F4F2FF</color>
+    <color name="pair_background">#000000</color>
+    <color name="pair_text_primary">#FFFFFF</color>
+    <color name="pair_text_secondary">#B8B8C0</color>
+    <color name="pair_status_connected">#7AD99A</color>
+    <color name="pair_status_error">#FFB4AB</color>
+    <color name="pair_button_fill">#000000</color>
+    <color name="pair_button_border">#73737D</color>
+    <color name="pair_button_content">#FFFFFF</color>
+    <color name="pair_button_ripple">#33FFFFFF</color>
 </resources>
