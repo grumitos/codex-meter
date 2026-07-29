@@ -3,7 +3,7 @@ import { isIPv4 } from "node:net";
 import QRCode from "qrcode";
 
 const remoteMark = `<g fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 31V12a4 4 0 0 1 4-4h32a4 4 0 0 1 4 4v19"/><path d="M10 31h44a2 2 0 0 1 2 2v2a7 7 0 0 1-7 7H15a7 7 0 0 1-7-7v-2a2 2 0 0 1 2-2Z"/></g><g fill="currentColor"><circle cx="32" cy="49" r="2.6"/><circle cx="12" cy="58" r="2.4"/><circle cx="22" cy="58" r="2.4"/><circle cx="32" cy="58" r="2.4"/><circle cx="42" cy="58" r="2.4"/><circle cx="52" cy="58" r="2.4"/></g>`;
-const favicon = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><style>svg{color:#544bd7}@media(prefers-color-scheme:dark){svg{color:#918aff}}</style>${remoteMark}</svg>`)}`;
+const favicon = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><style>svg{color:#000}@media(prefers-color-scheme:dark){svg{color:#fff}}</style>${remoteMark}</svg>`)}`;
 
 function isPrivateIpv4(host) {
   if (!isIPv4(host)) {
@@ -66,7 +66,7 @@ export async function renderPairingHtml(options) {
       color-scheme: light dark;
       font-family: system-ui, sans-serif;
       background: #f7f7fa;
-      color: #18181b;
+      color: #000;
     }
     * { box-sizing: border-box; }
     body {
@@ -93,7 +93,7 @@ export async function renderPairingHtml(options) {
       width: 3rem;
       height: 3rem;
       margin: 0 auto .75rem;
-      color: #544bd7;
+      color: #18181b;
     }
     h1 {
       margin: 0;

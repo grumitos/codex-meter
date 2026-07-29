@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#F7F7FC</color>
-    <color name="ic_launcher_foreground">#544BD7</color>
+    <color name="ic_launcher_background">#FFFFFF</color>
+    <color name="ic_launcher_foreground">#000000</color>
+    <color name="pair_logo">#000000</color>
     <color name="pair_background">#F7F7FA</color>
     <color name="pair_text_primary">#18181B</color>
     <color name="pair_text_secondary">#5F5F68</color>

@@ -85,6 +85,8 @@ test("renders the product favicon and main browser languages", async () => {
   assert.match(html, /<link rel="icon" href="data:image\/svg\+xml,/);
   assert.match(html, /class="product-mark"/);
   assert.match(html, /M12 31V12/);
+  assert.match(html, /svg%7Bcolor%3A%23000/);
+  assert.doesNotMatch(html, /#544bd7|#918aff/i);
   assert.match(html, /navigator\.language/);
   for (const language of ["en", "es", "pt", "fr", "de", "ja", "ko", "zh"]) {
     assert.match(html, new RegExp(`\\b${language}:`));

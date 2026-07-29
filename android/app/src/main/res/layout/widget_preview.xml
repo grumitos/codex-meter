@@ -55,7 +55,7 @@
                 android:layout_height="10dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_remote_mark"
-                android:tint="?android:attr/textColorSecondary"
+                android:tint="?android:attr/textColorPrimary"
                 android:translationY="1dp" />
 
             <TextView

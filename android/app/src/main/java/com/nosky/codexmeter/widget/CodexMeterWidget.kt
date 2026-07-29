@@ -169,7 +169,7 @@ private fun WidgetSurface(state: StoredWidgetState, paired: Boolean) {
                                     contentDescription = null,
                                     modifier = GlanceModifier.size(10.dp),
                                     colorFilter = ColorFilter.tint(
-                                        GlanceTheme.colors.onSurfaceVariant,
+                                        GlanceTheme.colors.onSurface,
                                     ),
                                 )
                             }
