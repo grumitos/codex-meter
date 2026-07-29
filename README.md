@@ -72,7 +72,12 @@ The exact palette and shape can differ by launcher, wallpaper, Android version, 
 
 ## Language support
 
-The Android pairing screen, browser page, and Windows tray status support English, Spanish, Portuguese, French, German, Japanese, Korean, and Simplified Chinese, with English fallback. Widget reset dates use Android locale data, so month and day formatting follow the phone language automatically.
+English, Spanish, Portuguese, French, German, Japanese, Korean, and Simplified Chinese are supported, with English fallback.
+
+- The Android app follows the phone's active system language through native Android resources.
+- Widget reset dates use Android's locale data, so month and day formatting follow the phone language and region automatically.
+- The Windows tray follows the Windows interface language.
+- The pairing page follows the browser language. Chrome normally inherits the Windows preference, but an explicitly configured Chrome language takes precedence.
 
 ## How it works
 
