@@ -51,11 +51,12 @@ function httpsRequest(url, { method = "GET", headers = {} } = {}) {
   });
 }
 
-async function withServer(service, callback) {
+async function withServer(service, callback, options = {}) {
   const server = createUsageServer(service, {
     authenticationKey: KEY,
     clock: () => NOW_SECONDS * 1_000,
     tls: { key: TLS.private, cert: TLS.cert },
+    ...options,
   });
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   const { port } = server.address();
@@ -92,6 +93,24 @@ test("serves the authenticated usage contract over TLS without HTTP caching", as
       405,
     );
   });
+});
+
+test("reports a connection only after a successful authenticated usage request", async () => {
+  let connections = 0;
+  await withServer(
+    { readUsage: async () => ({ remainingPercent: 65 }) },
+    async (baseUrl) => {
+      assert.equal((await httpsRequest(`${baseUrl}/v1/usage`)).status, 401);
+      assert.equal(connections, 0);
+
+      const response = await httpsRequest(`${baseUrl}/v1/usage`, {
+        headers: signedHeaders(),
+      });
+      assert.equal(response.status, 200);
+      assert.equal(connections, 1);
+    },
+    { onConnected: () => { connections += 1; } },
+  );
 });
 
 test("rejects missing and invalid authentication without revealing why", async () => {

@@ -86,17 +86,31 @@ test("renders the product favicon and main browser languages", async () => {
   assert.match(html, /class="product-mark"/);
   assert.match(html, /M12 31V12/);
   assert.match(html, /svg%7Bcolor%3A%23000/);
+  assert.match(html, /transform%3D%22translate\(0%202\)%22/);
   assert.doesNotMatch(html, /#544bd7|#918aff/i);
   assert.match(html, /navigator\.language/);
   for (const language of ["en", "es", "pt", "fr", "de", "ja", "ko", "zh"]) {
     assert.match(html, new RegExp(`\\b${language}:`));
   }
+  assert.match(html, /Connected · You can close this window/);
+  assert.match(html, /Conectado · Puedes cerrar esta ventana/);
+  assert.match(html, /fetch\("\/status"/);
+  assert.match(html, /classList\.add\("connected"\)/);
+  assert.match(html, /clearInterval\(statusTimer\)/);
+  assert.match(html, /if \(closing\) return;/);
+  assert.match(html, /qr\.animate\(/);
+  assert.match(html, /intro\.animate\(/);
+  assert.match(html, /prefers-reduced-motion: reduce/);
+  assert.match(html, /main\.connected \.qr \{ display: none; \}/);
+  assert.match(html, /\.intro \{[^}]*max-width: 28rem;[^}]*justify-self: center;/s);
 });
 
-test("renders the current pairing page on every local request", async () => {
+test("renders the current pairing page and reports connection state locally", async () => {
   let endpoint = "192.168.1.2:4317";
+  let connected = false;
   const server = createPairingServer(async () =>
     `<!doctype html><title>Codex Meter</title><code>${endpoint}</code>`,
+    () => connected,
   );
   try {
     await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
@@ -107,12 +121,22 @@ test("renders the current pairing page on every local request", async () => {
     assert.match(first.headers.get("content-type"), /^text\/html/);
     assert.equal(first.headers.get("cache-control"), "no-store");
     assert.match(first.headers.get("content-security-policy"), /script-src 'unsafe-inline'/);
+    assert.match(first.headers.get("content-security-policy"), /connect-src 'self'/);
     assert.match(await first.text(), /192\.168\.1\.2:4317/);
 
+    const initialStatus = await fetch(`http://127.0.0.1:${port}/status`);
+    assert.equal(initialStatus.status, 200);
+    assert.deepEqual(await initialStatus.json(), { connected: false });
+
     endpoint = "192.168.1.24:5317";
+    connected = true;
     assert.match(
       await (await fetch(`http://127.0.0.1:${port}/`)).text(),
       /192\.168\.1\.24:5317/,
+    );
+    assert.deepEqual(
+      await (await fetch(`http://127.0.0.1:${port}/status`)).json(),
+      { connected: true },
     );
     assert.equal(
       (await fetch(`http://127.0.0.1:${port}/v1/usage`)).status,

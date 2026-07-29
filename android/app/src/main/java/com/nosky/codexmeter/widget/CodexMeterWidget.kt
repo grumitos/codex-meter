@@ -5,6 +5,9 @@ import android.content.Intent
 import android.icu.text.DateFormat
 import android.icu.util.TimeZone
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.glance.ColorFilter
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -21,6 +24,7 @@ import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
+import androidx.glance.color.ColorProvider
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
@@ -35,8 +39,6 @@ import androidx.glance.semantics.semantics
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.nosky.codexmeter.PairActivity
 import com.nosky.codexmeter.R
 import com.nosky.codexmeter.data.PairingStore
@@ -169,7 +171,10 @@ private fun WidgetSurface(state: StoredWidgetState, paired: Boolean) {
                                     contentDescription = null,
                                     modifier = GlanceModifier.size(10.dp),
                                     colorFilter = ColorFilter.tint(
-                                        GlanceTheme.colors.onSurface,
+                                        ColorProvider(
+                                            day = Color.Black,
+                                            night = Color.White,
+                                        ),
                                     ),
                                 )
                             }

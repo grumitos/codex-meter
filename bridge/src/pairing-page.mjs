@@ -3,7 +3,7 @@ import { isIPv4 } from "node:net";
 import QRCode from "qrcode";
 
 const remoteMark = `<g fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 31V12a4 4 0 0 1 4-4h32a4 4 0 0 1 4 4v19"/><path d="M10 31h44a2 2 0 0 1 2 2v2a7 7 0 0 1-7 7H15a7 7 0 0 1-7-7v-2a2 2 0 0 1 2-2Z"/></g><g fill="currentColor"><circle cx="32" cy="49" r="2.6"/><circle cx="12" cy="58" r="2.4"/><circle cx="22" cy="58" r="2.4"/><circle cx="32" cy="58" r="2.4"/><circle cx="42" cy="58" r="2.4"/><circle cx="52" cy="58" r="2.4"/></g>`;
-const favicon = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><style>svg{color:#000}@media(prefers-color-scheme:dark){svg{color:#fff}}</style>${remoteMark}</svg>`)}`;
+const favicon = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><style>svg{color:#000}@media(prefers-color-scheme:dark){svg{color:#fff}}</style><g transform="translate(0 2)">${remoteMark}</g></svg>`)}`;
 
 function isPrivateIpv4(host) {
   if (!isIPv4(host)) {
@@ -78,16 +78,25 @@ export async function renderPairingHtml(options) {
     }
     main {
       width: min(100%, 52rem);
+      min-height: 22.125rem;
       padding: 2rem;
       display: grid;
       grid-template-columns: minmax(0, 1fr) 18rem;
-      gap: 3rem;
+      gap: 2rem;
       align-items: center;
       border: 1px solid #dedee5;
       border-radius: 1.75rem;
       background: #fff;
     }
-    .intro { min-width: 0; text-align: center; }
+    main.connected { grid-template-columns: 1fr; gap: 0; }
+    main.connected .qr { display: none; }
+    .intro {
+      width: 100%;
+      max-width: 28rem;
+      min-width: 0;
+      justify-self: center;
+      text-align: center;
+    }
     .product-mark {
       display: block;
       width: 3rem;
@@ -110,11 +119,12 @@ export async function renderPairingHtml(options) {
     }
     .status {
       margin-top: 1.5rem;
-      color: #146c2e;
+      color: #5f5f68;
       font-size: .875rem;
       font-weight: 600;
       line-height: 1.4;
     }
+    .status.connected { color: #146c2e; }
     code {
       display: block;
       margin-top: .5rem;
@@ -133,7 +143,8 @@ export async function renderPairingHtml(options) {
       main { border-color: #303036; background: #000; }
       .product-mark { color: #fff; }
       p, code { color: #b8b8c0; }
-      .status { color: #7ad99a; }
+      .status { color: #b8b8c0; }
+      .status.connected { color: #7ad99a; }
     }
     @media (max-width: 43.75rem) {
       body { padding: 1rem; }
@@ -143,6 +154,9 @@ export async function renderPairingHtml(options) {
         grid-template-columns: 1fr;
         gap: 1.5rem;
       }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; }
     }
   </style>
 </head>
@@ -159,24 +173,74 @@ export async function renderPairingHtml(options) {
   </main>
   <script>
     const translations = {
-      en: ["Pair Codex Meter", "Connect your phone", "Open Codex Meter on your phone and scan this QR. Both devices must be on the same Wi-Fi network.", "Ready to pair", "Codex Meter pairing QR"],
-      es: ["Emparejar Codex Meter", "Conecta tu teléfono", "Abre Codex Meter en tu teléfono y escanea este QR. Ambos dispositivos deben estar en la misma red Wi-Fi.", "Listo para vincular", "QR para vincular Codex Meter"],
-      pt: ["Emparelhar Codex Meter", "Conecte seu telefone", "Abra o Codex Meter no celular e escaneie este QR. Os dois dispositivos devem estar na mesma rede Wi-Fi.", "Pronto para emparelhar", "QR para emparelhar o Codex Meter"],
-      fr: ["Associer Codex Meter", "Connectez votre téléphone", "Ouvrez Codex Meter sur votre téléphone et scannez ce QR. Les deux appareils doivent utiliser le même réseau Wi-Fi.", "Prêt à associer", "QR d’association de Codex Meter"],
-      de: ["Codex Meter koppeln", "Smartphone verbinden", "Öffne Codex Meter auf deinem Smartphone und scanne diesen QR-Code. Beide Geräte müssen im selben WLAN sein.", "Bereit zum Koppeln", "QR-Code zum Koppeln von Codex Meter"],
-      ja: ["Codex Meter をペアリング", "スマートフォンを接続", "スマートフォンで Codex Meter を開いてこの QR コードをスキャンしてください。両方のデバイスを同じ Wi-Fi に接続します。", "ペアリングの準備完了", "Codex Meter ペアリング用 QR コード"],
-      ko: ["Codex Meter 페어링", "휴대전화 연결", "휴대전화에서 Codex Meter를 열고 이 QR을 스캔하세요. 두 기기가 같은 Wi-Fi에 연결되어 있어야 합니다.", "페어링 준비됨", "Codex Meter 페어링 QR"],
-      zh: ["配对 Codex Meter", "连接手机", "在手机上打开 Codex Meter 并扫描此二维码。两台设备必须连接到同一 Wi-Fi 网络。", "已准备好配对", "Codex Meter 配对二维码"],
+      en: ["Pair Codex Meter", "Connect your phone", "Open Codex Meter on your phone and scan this QR. Both devices must be on the same Wi-Fi network.", "Ready to pair", "Connected · You can close this window", "Codex Meter pairing QR"],
+      es: ["Emparejar Codex Meter", "Conecta tu teléfono", "Abre Codex Meter en tu teléfono y escanea este QR. Ambos dispositivos deben estar en la misma red Wi-Fi.", "Listo para vincular", "Conectado · Puedes cerrar esta ventana", "QR para vincular Codex Meter"],
+      pt: ["Emparelhar Codex Meter", "Conecte seu telefone", "Abra o Codex Meter no celular e escaneie este QR. Os dois dispositivos devem estar na mesma rede Wi-Fi.", "Pronto para emparelhar", "Conectado · Você pode fechar esta janela", "QR para emparelhar o Codex Meter"],
+      fr: ["Associer Codex Meter", "Connectez votre téléphone", "Ouvrez Codex Meter sur votre téléphone et scannez ce QR. Les deux appareils doivent utiliser le même réseau Wi-Fi.", "Prêt à associer", "Connecté · Vous pouvez fermer cette fenêtre", "QR d’association de Codex Meter"],
+      de: ["Codex Meter koppeln", "Smartphone verbinden", "Öffne Codex Meter auf deinem Smartphone und scanne diesen QR-Code. Beide Geräte müssen im selben WLAN sein.", "Bereit zum Koppeln", "Verbunden · Du kannst dieses Fenster schließen", "QR-Code zum Koppeln von Codex Meter"],
+      ja: ["Codex Meter をペアリング", "スマートフォンを接続", "スマートフォンで Codex Meter を開いてこの QR コードをスキャンしてください。両方のデバイスを同じ Wi-Fi に接続します。", "ペアリングの準備完了", "接続済み · このウィンドウを閉じても構いません", "Codex Meter ペアリング用 QR コード"],
+      ko: ["Codex Meter 페어링", "휴대전화 연결", "휴대전화에서 Codex Meter를 열고 이 QR을 스캔하세요. 두 기기가 같은 Wi-Fi에 연결되어 있어야 합니다.", "페어링 준비됨", "연결됨 · 이 창을 닫아도 됩니다", "Codex Meter 페어링 QR"],
+      zh: ["配对 Codex Meter", "连接手机", "在手机上打开 Codex Meter 并扫描此二维码。两台设备必须连接到同一 Wi-Fi 网络。", "已准备好配对", "已连接 · 可以关闭此窗口", "Codex Meter 配对二维码"],
     };
     const requested = navigator.language.toLowerCase().split("-")[0];
     const language = translations[requested] ? requested : "en";
-    const [title, heading, description, status, qrLabel] = translations[language];
+    const [title, heading, description, readyStatus, connectedStatus, qrLabel] = translations[language];
+    const main = document.querySelector("main");
+    const intro = document.querySelector(".intro");
+    const qr = document.querySelector(".qr");
+    const status = document.querySelector(".status");
     document.documentElement.lang = language;
     document.title = title;
     document.querySelector("h1").textContent = heading;
     document.querySelector("p").textContent = description;
-    document.querySelector(".status").textContent = status;
-    document.querySelector(".qr").setAttribute("aria-label", qrLabel);
+    status.textContent = readyStatus;
+    qr.setAttribute("aria-label", qrLabel);
+    let closing = false;
+    function finishConnectedState(animate) {
+      const beforeIntro = intro.getBoundingClientRect();
+      const beforeMain = main.getBoundingClientRect();
+      status.textContent = connectedStatus;
+      status.classList.add("connected");
+      main.classList.add("connected");
+      if (!animate || typeof intro.animate !== "function") return;
+      const afterIntro = intro.getBoundingClientRect();
+      const afterMain = main.getBoundingClientRect();
+      intro.animate([
+        { transform: "translate(" + (beforeIntro.left - afterIntro.left) + "px, " + (beforeIntro.top - afterIntro.top) + "px)", opacity: .65 },
+        { transform: "translate(0, 0)", opacity: 1 },
+      ], { duration: 200, easing: "cubic-bezier(.2,.8,.2,1)" });
+      if (Math.abs(beforeMain.height - afterMain.height) > 1) {
+        main.animate([
+          { height: beforeMain.height + "px" },
+          { height: afterMain.height + "px" },
+        ], { duration: 200, easing: "cubic-bezier(.2,.8,.2,1)" });
+      }
+    }
+    async function showConnectedState() {
+      if (closing) return;
+      closing = true;
+      clearInterval(statusTimer);
+      const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduceMotion || typeof qr.animate !== "function") {
+        finishConnectedState(false);
+        return;
+      }
+      const fade = qr.animate([
+        { opacity: 1, transform: "translateX(0) scale(1)" },
+        { opacity: 0, transform: "translateX(12px) scale(.98)" },
+      ], { duration: 160, easing: "cubic-bezier(.4,0,.2,1)" });
+      try { await fade.finished; } catch {}
+      finishConnectedState(true);
+    }
+    async function updateConnectionStatus() {
+      try {
+        const response = await fetch("/status", { cache: "no-store" });
+        if (!response.ok || !(await response.json()).connected) return;
+        await showConnectedState();
+      } catch {}
+    }
+    const statusTimer = setInterval(updateConnectionStatus, 1_000);
+    void updateConnectionStatus();
   </script>
 </body>
 </html>

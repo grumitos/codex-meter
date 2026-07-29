@@ -33,13 +33,26 @@ function sendText(response, statusCode, body, headers = {}) {
   response.end(encoded);
 }
 
-export function createPairingServer(renderPairingPage) {
+export function createPairingServer(
+  renderPairingPage,
+  getConnectionStatus = () => false,
+) {
   return http.createServer(async (request, response) => {
     let pathname;
     try {
       pathname = new URL(request.url ?? "/", "http://localhost").pathname;
     } catch {
       sendText(response, 404, "No encontrado");
+      return;
+    }
+    if (pathname === "/status") {
+      if (request.method !== "GET") {
+        sendJson(response, 405, { error: "method_not_allowed" }, {
+          extraHeaders: { Allow: "GET" },
+        });
+        return;
+      }
+      sendJson(response, 200, { connected: Boolean(getConnectionStatus()) });
       return;
     }
     if (pathname !== "/") {
@@ -53,7 +66,7 @@ export function createPairingServer(renderPairingPage) {
     try {
       sendText(response, 200, await renderPairingPage(), {
         "Content-Type": "text/html; charset=utf-8",
-        "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:",
+        "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; connect-src 'self'",
         "X-Frame-Options": "DENY",
       });
     } catch {
@@ -64,7 +77,7 @@ export function createPairingServer(renderPairingPage) {
 
 export function createUsageServer(
   service,
-  { authenticationKey, tls, clock = Date.now } = {},
+  { authenticationKey, tls, clock = Date.now, onConnected = () => {} } = {},
 ) {
   const authenticator = new RequestAuthenticator(authenticationKey, { clock });
 
@@ -97,7 +110,9 @@ export function createUsageServer(
       return;
     }
     try {
-      sendJson(response, 200, await service.readUsage());
+      const usage = await service.readUsage();
+      onConnected();
+      sendJson(response, 200, usage);
     } catch (error) {
       if (error instanceof UsageUnavailableError) {
         sendJson(response, 503, { error: "usage_unavailable" });

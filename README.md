@@ -11,41 +11,31 @@ Codex Meter is a personal Android 1×1 widget that shows the remaining weekly Co
 - Refreshes when the widget is tapped and every 30 minutes while installed.
 - Shows one centered offline symbol when the PC cannot be reached.
 - Pairs by QR with certificate pinning and signed requests.
-- Runs the Windows controller silently at sign-in.
+- Runs as one silent Windows process started with a double-click.
 
 There is no history, account system, telemetry, notification service, cloud relay, or access outside the private LAN.
 
 ## Install from the release ZIP
 
-Requirements: Windows, Node.js 22 or newer, and an authenticated current Codex CLI.
+Requirements: Windows and an authenticated current Codex CLI.
 
-1. Extract the ZIP and open PowerShell in its folder.
-2. Run `./scripts/install-windows.ps1` from a normal, non-administrator terminal.
-3. Accept the single Windows firewall elevation prompt. The local pairing page opens at `http://localhost:4318/`.
+1. Extract the ZIP. It contains only `Codex-Meter-Windows.exe` and `Codex-Meter.apk`.
+2. Double-click `Codex-Meter-Windows.exe`. It runs silently and opens the pairing page in the default browser.
+3. If Windows asks, allow access on private networks.
 4. Install `Codex-Meter.apk` on the phone.
 5. Open **Codex Meter**, scan the QR while both devices use the same Wi-Fi, and add its 1×1 widget.
 
-The Start menu shortcut **Codex Meter** reopens the local pairing page. The page regenerates its QR from the currently configured LAN address, port, key, and certificate. It remains intentionally identical while those values remain unchanged. Use the following command when the PC changes networks:
-
-```powershell
-./scripts/configure-lan.ps1
-```
-
-To invalidate the previous phone pairing and create a new identity:
-
-```powershell
-./scripts/configure-lan.ps1 -RotateKey
-```
+Run the EXE once after each Windows sign-in. A second double-click reopens the same live pairing page without starting another controller. The QR is generated dynamically from the current private LAN address, port, request key, and certificate; it remains intentionally identical until one of those values changes.
 
 ## Security model
 
-The controller listens on HTTPS port `4317`, restricted by Windows Firewall to the selected private interface and local subnet. The QR transfers a random 256-bit request key and the self-signed certificate fingerprint. Every request includes a timestamp, nonce, and HMAC; the Android client also pins the certificate. Codex credentials never leave Windows.
+The controller binds HTTPS port `4317` directly to the selected private LAN address. The QR transfers a random 256-bit request key and the self-signed certificate fingerprint. Every request includes a timestamp, nonce, and HMAC; the Android client also pins the certificate. Codex credentials never leave Windows.
 
-The browser page listens only on `127.0.0.1:4318`. It supports English, Spanish, Portuguese, French, German, Japanese, Korean, and Chinese, with English fallback. Widget reset dates use Android's locale data rather than a hand-maintained month list.
+The browser page listens only on `127.0.0.1:4318`. It supports English, Spanish, Portuguese, French, German, Japanese, Korean, and Chinese, with English fallback. After the first authenticated phone request, it removes the QR and confirms that the window can be closed. Widget reset dates use Android's locale data rather than a hand-maintained month list.
 
 ## Build from source
 
-Requirements: Node.js 22+, authenticated Codex CLI, JDK 17, Android SDK, and ADB.
+Requirements: Node.js 26+, authenticated Codex CLI, JDK 17, Android SDK, and ADB.
 
 ```powershell
 cd bridge
@@ -54,9 +44,12 @@ npm test
 
 cd ../android
 ./gradlew.bat testDebugUnitTest lintDebug assembleDebug --no-parallel
+
+cd ..
+./scripts/build-windows.ps1
 ```
 
-`./scripts/build-apk.ps1` runs the Android checks and writes `dist/Codex-Meter.apk`. `./scripts/install-apk.ps1` installs that APK on the single connected ADB device, or accepts `-Serial` for a specific device.
+`./scripts/build-apk.ps1` runs the Android checks and writes `dist/Codex-Meter.apk`. `./scripts/build-windows.ps1` bundles Node into the single silent controller. `./scripts/install-apk.ps1` installs the APK on the single connected ADB device, or accepts `-Serial` for a specific device.
 
 ## Closed API
 

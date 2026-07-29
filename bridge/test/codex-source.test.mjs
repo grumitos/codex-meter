@@ -63,7 +63,7 @@ test("performs the app-server handshake and reads rate limits", async () => {
   assert.deepEqual(fake.messages[0].params.clientInfo, {
     name: "codex_meter_bridge",
     title: "Codex Meter Bridge",
-    version: "1.1.1",
+    version: "1.1.2",
   });
   assert.deepEqual(fake.messages[2].params, {});
 
