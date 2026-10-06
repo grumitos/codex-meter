@@ -3,6 +3,11 @@
     <string name="widget_description">Uso restante do Codex</string>
     <string name="preview_reset_date">3 ago.</string>
     <string name="refresh_description">Atualizar uso do Codex</string>
+    <string name="widget_state_not_paired">Conecte seu PC</string>
+    <string name="widget_state_offline">Sem conexão</string>
+    <string name="widget_state_no_data">Sem dados</string>
+    <string name="widget_state_usage">%1$d%% restante, reinicia em %2$s</string>
+    <string name="widget_accessibility_description">%1$s. %2$s</string>
     <string name="pair_title">Conecte seu PC</string>
     <string name="pair_explanation">Abra “Emparelhar telefone” no PC e escaneie o código QR. Os dois dispositivos devem estar na mesma rede Wi‑Fi.</string>
     <string name="pair_scan">Escanear código QR</string>

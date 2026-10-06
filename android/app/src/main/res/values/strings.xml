@@ -6,6 +6,11 @@
     <string name="preview_percent" formatted="false" translatable="false">%</string>
     <string name="preview_reset_date">3 Aug</string>
     <string name="refresh_description">Refresh Codex usage</string>
+    <string name="widget_state_not_paired">Connect your PC</string>
+    <string name="widget_state_offline">Offline</string>
+    <string name="widget_state_no_data">No data</string>
+    <string name="widget_state_usage">%1$d%% remaining, resets %2$s</string>
+    <string name="widget_accessibility_description">%1$s. %2$s</string>
     <string name="pair_title">Connect your PC</string>
     <string name="pair_explanation">Open “Pair phone” on your PC and scan the QR code. Both devices must be on the same Wi‑Fi network.</string>
     <string name="pair_scan">Scan QR code</string>

@@ -3,6 +3,11 @@
     <string name="widget_description">Verbleibende Codex-Nutzung</string>
     <string name="preview_reset_date">3. Aug.</string>
     <string name="refresh_description">Codex-Nutzung aktualisieren</string>
+    <string name="widget_state_not_paired">PC verbinden</string>
+    <string name="widget_state_offline">Offline</string>
+    <string name="widget_state_no_data">Keine Daten</string>
+    <string name="widget_state_usage">%1$d %% verbleibend, Zurücksetzung am %2$s</string>
+    <string name="widget_accessibility_description">%1$s. %2$s</string>
     <string name="pair_title">PC verbinden</string>
     <string name="pair_explanation">Öffne „Smartphone koppeln“ auf dem PC und scanne den QR-Code. Beide Geräte müssen im selben WLAN sein.</string>
     <string name="pair_scan">QR-Code scannen</string>

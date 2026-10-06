@@ -3,6 +3,11 @@
     <string name="widget_description">Codex 剩余用量</string>
     <string name="preview_reset_date">8月3日</string>
     <string name="refresh_description">刷新 Codex 用量</string>
+    <string name="widget_state_not_paired">连接电脑</string>
+    <string name="widget_state_offline">离线</string>
+    <string name="widget_state_no_data">无数据</string>
+    <string name="widget_state_usage">剩余 %1$d%%，%2$s重置</string>
+    <string name="widget_accessibility_description">%1$s。%2$s</string>
     <string name="pair_title">连接电脑</string>
     <string name="pair_explanation">在电脑上打开“配对手机”并扫描二维码。两台设备必须连接到同一 Wi‑Fi 网络。</string>
     <string name="pair_scan">扫描二维码</string>

@@ -71,10 +71,14 @@ private fun WidgetSurface(state: StoredWidgetState, paired: Boolean) {
     val resetDate = state.resetsAtEpochMillis?.let { formatResetDate(context, it) }
     val showUsage = paired && !state.offline && remaining != null && resetDate != null
     val stateDescription = when {
-        !paired -> "Conectar PC"
-        state.offline -> "Sin conexión"
-        !showUsage -> "Sin datos"
-        else -> "$remaining% restante, reinicia $resetDate"
+        !paired -> context.getString(R.string.widget_state_not_paired)
+        state.offline -> context.getString(R.string.widget_state_offline)
+        !showUsage -> context.getString(R.string.widget_state_no_data)
+        else -> context.getString(
+            R.string.widget_state_usage,
+            checkNotNull(remaining),
+            checkNotNull(resetDate),
+        )
     }
 
     Box(
@@ -87,9 +91,13 @@ private fun WidgetSurface(state: StoredWidgetState, paired: Boolean) {
                 .background(GlanceTheme.colors.widgetBackground)
                 .cornerRadius(R.dimen.widget_corner_radius)
                 .semantics {
-                    contentDescription = "$stateDescription. ${context.getString(
-                        if (paired) R.string.refresh_description else R.string.pair_widget_action,
-                    )}"
+                    contentDescription = context.getString(
+                        R.string.widget_accessibility_description,
+                        stateDescription.trimEnd('.'),
+                        context.getString(
+                            if (paired) R.string.refresh_description else R.string.pair_widget_action,
+                        ),
+                    )
                 }
                 .clickable(
                     if (paired) {

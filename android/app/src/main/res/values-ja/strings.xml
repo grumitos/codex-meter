@@ -3,6 +3,11 @@
     <string name="widget_description">Codex の残り使用量</string>
     <string name="preview_reset_date">8月3日</string>
     <string name="refresh_description">Codex の使用量を更新</string>
+    <string name="widget_state_not_paired">PC に接続</string>
+    <string name="widget_state_offline">オフライン</string>
+    <string name="widget_state_no_data">データなし</string>
+    <string name="widget_state_usage">残り %1$d%%、%2$sにリセット</string>
+    <string name="widget_accessibility_description">%1$s。%2$s</string>
     <string name="pair_title">PC に接続</string>
     <string name="pair_explanation">PC で「スマートフォンをペアリング」を開き、QR コードをスキャンしてください。両方のデバイスを同じ Wi‑Fi に接続します。</string>
     <string name="pair_scan">QR コードをスキャン</string>
