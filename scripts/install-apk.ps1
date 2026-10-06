@@ -6,9 +6,18 @@ param(
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $apk = Join-Path $projectRoot 'dist\Codex-Meter.apk'
-$adb = Join-Path $env:LOCALAPPDATA 'Android\Sdk\platform-tools\adb.exe'
 if (-not (Test-Path -LiteralPath $apk)) { throw 'Build the APK first with scripts/build-apk.ps1.' }
-if (-not (Test-Path -LiteralPath $adb)) { throw 'adb was not found.' }
+
+# adb comes from the Android SDK: ANDROID_HOME, then ANDROID_SDK_ROOT, then the default install folder.
+$adb = @(
+    $env:ANDROID_HOME,
+    $env:ANDROID_SDK_ROOT,
+    (Join-Path $env:LOCALAPPDATA 'Android\Sdk')
+) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+    ForEach-Object { Join-Path $_ 'platform-tools\adb.exe' } |
+    Where-Object { Test-Path -LiteralPath $_ } |
+    Select-Object -First 1
+if (-not $adb) { throw 'adb was not found. Set ANDROID_HOME to the Android SDK folder.' }
 
 if ([string]::IsNullOrWhiteSpace($Serial)) {
     $devices = @(& $adb devices | Select-Object -Skip 1 | ForEach-Object {
