@@ -1,100 +1,126 @@
-<p align="center">
-  <img src="assets/codex-remote.svg" width="64" height="64" alt="Codex Meter remote mark">
-</p>
+# Codex Meter
 
-<h1 align="center">Codex Meter</h1>
+Local Android widget and Windows tray controller in Kotlin and Node.js to show the remaining weekly Codex usage from the Codex app-server.
 
-<p align="center">
-  A tiny Android widget for your remaining weekly Codex usage,<br>
-  powered by a quiet Windows tray controller on your private network.
-</p>
+A 1x1 Android widget shows the percentage left of your weekly Codex allowance and its reset date. A
+Windows controller asks the local Codex CLI for the weekly rate limit and serves only that value
+over HTTPS on your private Wi-Fi network; the phone pairs with it once by scanning a QR code. There
+is no cloud service, account system, telemetry, history or notification. Codex Meter is an
+unofficial companion: it is not affiliated with or endorsed by OpenAI, and Codex and ChatGPT are
+marks of OpenAI.
 
-<p align="center">
-  <a href="https://github.com/grumitos/codex-meter/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/grumitos/codex-meter?display_name=tag&style=flat-square"></a>
-  <img alt="Android 8 or newer" src="https://img.shields.io/badge/Android-8%2B-3DDC84?style=flat-square&logo=android&logoColor=white">
-  <img alt="Windows 11" src="https://img.shields.io/badge/Windows-11-0078D4?style=flat-square&logo=windows11&logoColor=white">
-  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/License-MIT-black?style=flat-square"></a>
-</p>
+![Codex Meter widget in the dark theme showing 72% of the weekly allowance left and its reset date, next to its offline state, with sample data](docs/screenshots/widget.png)
 
-<a href="https://github.com/grumitos/codex-meter/releases/latest">
-  <img src="assets/codex-meter-social.png" width="100%" alt="Codex Meter 1 by 1 widget on a Samsung One UI home screen">
-</a>
+## Requirements
 
-<p align="center"><sub>Shown on Samsung One UI. Wallpaper artwork by <a href="https://www.pixiv.net/en/users/25915682">MON</a>.</sub></p>
+- Windows 11 (tested on 25H2) with Node.js 22 or newer in the `PATH`.
+- The Codex CLI, installed and signed in. The controller reads usage through its
+  [app-server protocol](https://developers.openai.com/codex/app-server/).
+- An Android 8.0 or newer phone on the same private Wi-Fi network, with Google Play services (the
+  QR scanner comes from them).
 
-## Codex usage, at a glance
+## Installation and usage
 
-Codex Meter puts the only number you usually need on your home screen: the percentage left in your **weekly** Codex allowance and its reset date. Tap the widget to refresh it. If the PC is unavailable, the number is replaced by a single offline symbol.
+The [latest release](https://github.com/grumitos/codex-meter/releases/latest) is a ZIP with two
+files:
 
-It shows only the weekly limit reported by Codex—no speculative five-hour window, historical chart, or estimated usage.
+1. On the PC, double-click `Codex-Meter-Windows.exe`. It opens the pairing page and stays in the
+   notification area: hover the icon for the last confirmed connection state, click it to reopen
+   the pairing page and right-click it to exit.
+2. On the phone, install `Codex-Meter.apk`, open Codex Meter, tap **Scan QR code** and scan the code
+   shown on the PC. Pairing transfers a random key and a certificate fingerprint, not a Codex
+   credential. It is needed only once per PC.
+3. Add the 1x1 Codex Meter widget to the home screen. Tap it to refresh; Android also refreshes it
+   about every 30 minutes. When the PC cannot be reached, the widget replaces the number with a
+   single offline symbol.
 
-It is intentionally small and closed in scope:
+To run the controller from the source instead of the EXE, run `run.bat` (with a double click or
+from a terminal). The first time it installs the bridge dependencies (`npm ci --omit=dev`). Then it
+starts the controller, which opens the pairing page in your browser and keeps running in that
+window until you press Ctrl+C. If a controller is already running, it only reopens the pairing
+page. The window pauses at the end only if something fails.
 
-- native 1×1 Android widget;
-- silent Windows 11 notification-area controller;
-- QR pairing over the current private Wi-Fi network;
-- no cloud service, account system, telemetry, history, or notifications.
+Without the launcher:
 
-## Quick use guide
+```bat
+cd bridge
+npm ci --omit=dev
+set CODEX_METER_RUN=1
+node src\windows-app.mjs
+```
 
-Download the [latest release](https://github.com/grumitos/codex-meter/releases/latest). Its ZIP contains exactly two files: the Android APK and the Windows EXE.
+`run.bat` accepts these options and rejects any other argument instead of starting the controller:
 
-### Windows
+| Option | Effect |
+| --- | --- |
+| `--self-test FILE` | writes the selected private address and the Node.js version to `FILE` and exits without starting the servers |
+| `--help` | shows the usage and exits |
 
-1. Install the current Codex CLI and sign in normally.
-2. Double-click `Codex-Meter-Windows.exe`. It opens the pairing page and stays silently in the notification area.
-3. Hover the tray icon for the last confirmed connection state, click it to reopen pairing, or right-click it to exit cleanly.
-
-### Pair once
-
-1. Keep the Windows PC and Android phone on the same private Wi-Fi network.
-2. Install `Codex-Meter.apk`, open Codex Meter, and tap **Scan QR code**.
-3. Scan the QR in the Windows browser. No Codex credential is copied to the phone.
-
-### Android
-
-1. Add the Codex Meter 1×1 widget to the home screen.
-2. Read the large remaining weekly percentage and the smaller reset date below it.
-3. Tap anywhere on the widget to refresh. Android also schedules a refresh approximately every 30 minutes.
-
-When Windows cannot be reached, the widget shows a centered offline symbol. Open the Android app again only to inspect the connection or pair with another PC.
-
-## Android and One UI themes
-
-Yes—Codex Meter is designed to adapt to current Android themes and Samsung One UI rather than imposing a fixed widget skin.
-
-- `GlanceTheme.colors.widgetBackground`, `onSurface`, and `onSurfaceVariant` provide launcher-aware light, dark, and dynamic colors.
-- Android's system widget radius is used on Android 12 and newer, so the launcher owns the outer shape.
-- The system font and locale format the typography and reset date.
-- The adaptive app icon exposes a monochrome layer for themed icons.
-
-The exact palette and shape can differ by launcher, wallpaper, Android version, and manufacturer. This is expected: Codex Meter follows the roles exposed by the host instead of trying to imitate Pixel or One UI with hard-coded colors. See Android's guidance for [dynamic widget themes](https://developer.android.com/design/ui/mobile/guides/widgets/style), [Glance theming](https://developer.android.com/codelabs/glance#6), and [system widget radii](https://developer.android.com/develop/ui/compose/glance/create-app-widget#rounded-corners). Samsung likewise recommends calm surfaces, readable contrast, and distinct light/dark treatment in its [One UI color system](https://developer.samsung.com/one-ui/color/system.html).
-
-## Language support
-
-English, Spanish, Portuguese, French, German, Japanese, Korean, and Simplified Chinese are supported, with English fallback.
-
-- The Android app follows the phone's active system language through native Android resources.
-- Widget reset dates use Android's locale data, so month and day formatting follow the phone language and region automatically.
-- The Windows tray follows the Windows interface language.
-- The pairing page follows the browser language. Chrome normally inherits the Windows preference, but an explicitly configured Chrome language takes precedence.
+The pairing key, the certificate, the last usage value and `controller.log` live in
+`%LOCALAPPDATA%\CodexMeter`. `run.bat` exits with code 1 if Node.js is missing, the dependencies
+cannot be installed or the controller fails (the cause is printed or appended to `controller.log`),
+with 2 for invalid arguments, and with 0 otherwise, including when you stop the controller with
+Ctrl+C.
 
 ## How it works
 
-The Windows controller starts `codex app-server` through its standard input/output protocol and reads the weekly rate-limit window. It exposes only the normalized widget payload to the paired phone.
+The controller starts `codex app-server` over its standard input and output and reads the weekly
+rate-limit window. It ignores the five-hour window and shows no history or estimates. It listens
+on two ports:
 
-- HTTPS usage endpoint: the selected private LAN address on port `4317`.
-- Local pairing page: `127.0.0.1:4318` only.
-- Refresh: widget tap plus Android's periodic 30-minute work window.
-- Offline behavior: retain the last valid value internally and show an explicit offline state.
+- `4317`: HTTPS on the selected private LAN address, for signed usage requests from the phone;
+- `4318`: the pairing page, on `127.0.0.1` only.
 
-The QR is generated from the current LAN address, request key, and certificate pin. It stays the same while that pairing identity and endpoint remain unchanged.
+The QR code encodes the LAN address, the request key and the certificate pin, so it stays the same
+while that pairing identity and address do not change. The widget refreshes when tapped and through
+a 30-minute [WorkManager](https://developer.android.com/develop/background-work/background-tasks/persistent)
+job; if the PC cannot be reached it keeps the last valid value internally and shows the offline
+state. The scope is deliberately small: no historical charts, multiple accounts, credits,
+notifications, relay or web scraping.
 
-## Security and privacy
+## Android and One UI themes
 
-Codex credentials never leave Windows. Pairing transfers a random 256-bit request key and the self-signed certificate fingerprint. Android pins that certificate, and every usage request carries a timestamp, nonce, and HMAC signature. Replay, expired, unsigned, and incorrectly signed requests are rejected.
+The widget follows the host launcher instead of imposing a skin. It is built with
+[Jetpack Glance](https://developer.android.com/develop/ui/compose/glance), whose theme roles
+(`widgetBackground`, `onSurface`, `onSurfaceVariant`) give light, dark and dynamic colors.
+Android 12 and newer use the system widget corner radius, the system font and locale format the
+text and the reset date, and the adaptive app icon has a monochrome layer for themed icons. Exact
+colors and shapes therefore differ between launchers, wallpapers, Android versions and
+manufacturers, such as Pixel and Samsung One UI. The screenshot shows the default dark theme.
 
-The bridge returns only:
+## Languages
+
+English, Spanish, Portuguese, French, German, Japanese, Korean and Simplified Chinese are supported,
+with English as the fallback. The Android app and the widget dates follow the phone language and
+region, the tray follows the Windows interface language and the pairing page follows the browser
+language.
+
+## Development
+
+Building needs Node.js 22 or newer, JDK 17 or newer, the Android SDK 36 (set `ANDROID_HOME` or
+create `android/local.properties` with `sdk.dir`) and ADB to install on a device.
+
+```powershell
+.\scripts\build-apk.ps1     # unit tests, lint and a debug APK in dist\Codex-Meter.apk
+.\scripts\install-apk.ps1   # installs that APK on the only connected ADB device
+
+cd bridge
+npm ci
+cd ..
+.\scripts\build-windows.ps1 # dist\Codex-Meter-Windows.exe
+```
+
+`build-windows.ps1` bundles the bridge with esbuild and embeds it in a small .NET Framework tray
+launcher built with the `csc.exe` that ships with Windows. The launcher starts the bridge with the
+Node.js runtime that the Codex CLI already requires.
+
+## Privacy
+
+Codex credentials never leave Windows. At pairing time the phone receives only a random 256-bit
+request key and the fingerprint of the controller's self-signed certificate. Android keeps the key
+in the Android Keystore, pins that certificate and excludes the pairing data from backups. Every
+usage request carries a timestamp, a nonce and an HMAC signature; expired, replayed, unsigned and
+incorrectly signed requests are rejected. The controller returns only this payload:
 
 ```json
 {
@@ -104,49 +130,41 @@ The bridge returns only:
 }
 ```
 
-There is no relay and no internet-facing listener. Use Codex Meter only on a private network you trust.
+The controller sends nothing outward: it only asks the local Codex CLI, which uses your existing
+sign-in. Its data stays in `%LOCALAPPDATA%\CodexMeter`, outside the repository. There is no relay,
+no internet-facing listener and no telemetry, so use Codex Meter only on a private network you
+trust. The screenshot in `docs/screenshots/` was rendered from the widget code with sample data.
 
-## Requirements
+## Tests
 
-### Use
+The bridge tests use Node's test runner and the Android tests use JUnit. They need no phone,
+Codex account or internet connection: the Codex process and the clock are replaced by test doubles,
+servers listen only on loopback and files go to temporary directories.
 
-- Windows 11 25H2
-- Node.js 22 or newer
-- current authenticated Codex CLI
-- Android 8.0 or newer
-
-### Build
-
-- Node.js 22 or newer
-- JDK 17
-- Android SDK 36
-- ADB for device installation
-
-```powershell
+```bat
 cd bridge
 npm ci
 npm test
 
-cd ../android
-./gradlew.bat testDebugUnitTest lintDebug assembleDebug --no-parallel
-
-cd ..
-./scripts/build-windows.ps1
+cd ..\android
+gradlew.bat testDebugUnitTest
 ```
 
-`scripts/build-apk.ps1` runs the Android checks and writes `dist/Codex-Meter.apk`. `scripts/build-windows.ps1` embeds the bridge in a small .NET Framework tray launcher and reuses the Node.js runtime required by Codex CLI. `scripts/install-apk.ps1` installs the APK on a connected ADB device.
+## Structure
 
-## Project scope
-
-Codex Meter deliberately does not include historical charts, multiple accounts, credits, notifications, Play Store publishing, a remote relay, or web scraping. The repository favors a small deterministic implementation over speculative compatibility layers.
-
-## Credits
-
-- Screenshot wallpaper artwork: [MON on Pixiv](https://www.pixiv.net/en/users/25915682). The artwork remains the property of its creator and is not covered by this repository's software license.
-- Built with [Jetpack Glance](https://developer.android.com/develop/ui/compose/glance), [WorkManager](https://developer.android.com/develop/background-work/background-tasks/persistent), and the official [Codex app-server protocol](https://developers.openai.com/codex/app-server/).
-
-Codex Meter is an unofficial open-source companion and is not affiliated with or endorsed by OpenAI. Codex, ChatGPT, and their respective marks belong to OpenAI.
+```text
+android/            Android app (Kotlin, Jetpack Glance): Gradle project
+  app/src/main/     widget, pairing screen, background refresh, resources in 8 languages
+  app/src/test/     unit tests: gradlew.bat testDebugUnitTest
+bridge/             Windows controller (Node.js)
+  src/              usage service, HTTPS and pairing servers, .NET tray launcher
+  test/             tests: npm test
+  scripts/          Windows icon generation for the EXE build
+scripts/            build and install scripts for the APK and the Windows EXE
+docs/               screenshot of the widget
+run.bat             launcher for Windows: installs the dependencies, starts the controller
+```
 
 ## License
 
-The software is available under the [MIT License](LICENSE). Third-party artwork shown in presentation screenshots is excluded.
+[MIT](LICENSE).
