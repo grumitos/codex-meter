@@ -146,3 +146,33 @@ test("renders the current pairing page and reports connection state locally", as
     await new Promise((resolve) => server.close(resolve));
   }
 });
+
+test("answers pairing server errors with short English text", async () => {
+  let failing = false;
+  const server = createPairingServer(async () => {
+    if (failing) throw new Error("not ready");
+    return "<!doctype html><title>Codex Meter</title>";
+  });
+  try {
+    await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+    const { port } = server.address();
+    const base = `http://127.0.0.1:${port}`;
+
+    const missing = await fetch(`${base}/missing`);
+    assert.equal(missing.status, 404);
+    assert.match(missing.headers.get("content-type"), /^text\/plain/);
+    assert.equal(await missing.text(), "Not found");
+
+    const wrongMethod = await fetch(`${base}/`, { method: "POST" });
+    assert.equal(wrongMethod.status, 405);
+    assert.equal(wrongMethod.headers.get("allow"), "GET");
+    assert.equal(await wrongMethod.text(), "Method not allowed");
+
+    failing = true;
+    const notReady = await fetch(`${base}/`);
+    assert.equal(notReady.status, 503);
+    assert.equal(await notReady.text(), "Codex Meter is not set up yet.");
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});

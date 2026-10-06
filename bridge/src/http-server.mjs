@@ -42,7 +42,7 @@ export function createPairingServer(
     try {
       pathname = new URL(request.url ?? "/", "http://localhost").pathname;
     } catch {
-      sendText(response, 404, "No encontrado");
+      sendText(response, 404, "Not found");
       return;
     }
     if (pathname === "/status") {
@@ -56,11 +56,11 @@ export function createPairingServer(
       return;
     }
     if (pathname !== "/") {
-      sendText(response, 404, "No encontrado");
+      sendText(response, 404, "Not found");
       return;
     }
     if (request.method !== "GET") {
-      sendText(response, 405, "Método no permitido", { Allow: "GET" });
+      sendText(response, 405, "Method not allowed", { Allow: "GET" });
       return;
     }
     try {
@@ -70,7 +70,7 @@ export function createPairingServer(
         "X-Frame-Options": "DENY",
       });
     } catch {
-      sendText(response, 503, "Codex Meter todavía no está configurado.");
+      sendText(response, 503, "Codex Meter is not set up yet.");
     }
   });
 }
