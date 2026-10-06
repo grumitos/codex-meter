@@ -5,12 +5,11 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $androidRoot = Join-Path $projectRoot 'android'
 
-$env:JAVA_HOME = 'C:\Program Files\Microsoft\jdk-17.0.19.10-hotspot'
-$env:Path = "$env:JAVA_HOME\bin;$env:Path"
 Push-Location -LiteralPath $androidRoot
 try {
+    # Gradle picks the JDK from JAVA_HOME or the PATH, and the SDK from ANDROID_HOME or local.properties.
     & .\gradlew.bat testDebugUnitTest lintDebug assembleDebug --no-parallel --console=plain
-    if ($LASTEXITCODE -ne 0) { throw 'La compilación Android falló.' }
+    if ($LASTEXITCODE -ne 0) { throw 'The Android build failed.' }
 } finally {
     Pop-Location
 }
