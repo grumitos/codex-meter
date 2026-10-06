@@ -1,0 +1,5 @@
+* text=auto
+# cmd.exe misreads labels and line breaks in files with LF line endings
+*.bat text eol=crlf
+# The Gradle wrapper script is run by a POSIX shell
+android/gradlew text eol=lf

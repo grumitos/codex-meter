@@ -1,12 +1,27 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+
+# Node.js
+node_modules/
+
+# Android and Gradle
 .gradle/
 .kotlin/
-.idea/
-*.iml
 local.properties
 android/**/build/
-bridge/node_modules/
+
+# Local data and generated output
 bridge/.build/
 dist/
 .codex-remote-attachments/
-*.jks
-*.keystore
+
+# System and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
